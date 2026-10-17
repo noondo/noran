@@ -1,7 +1,9 @@
 ﻿from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
 from production_app.logging_config import get_logger
 
 logger = get_logger(__name__)
+
 
 def evaluate_pipeline(pipeline, X_test, y_test, target_names):
     """Calculate and report classification metrics and confusion matrix."""

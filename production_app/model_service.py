@@ -1,5 +1,7 @@
 ﻿import joblib
+
 from production_app.config import MODELS_DIR, PIPELINE_PATH, TARGET_NAMES_PATH
+
 
 def save_pipeline(pipeline, target_names):
     """Save the fitted pipeline artifact with joblib."""
@@ -7,11 +9,13 @@ def save_pipeline(pipeline, target_names):
     joblib.dump(pipeline, PIPELINE_PATH)
     joblib.dump(target_names, TARGET_NAMES_PATH)
 
+
 def load_pipeline():
     """Load the saved pipeline artifact."""
     pipeline = joblib.load(PIPELINE_PATH)
     target_names = joblib.load(TARGET_NAMES_PATH)
     return pipeline, target_names
+
 
 def predict_sample(sample_df):
     """Predict using the saved artifact without retraining."""

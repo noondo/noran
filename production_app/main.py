@@ -1,8 +1,9 @@
-﻿from production_app.logging_config import setup_logging, get_logger
-from production_app.data import load_data, inspect_data, split_data
-from production_app.training import train_pipeline
+﻿from production_app.data import inspect_data, load_data, split_data
 from production_app.evaluation import evaluate_pipeline
-from production_app.model_service import save_pipeline, predict_sample
+from production_app.logging_config import get_logger, setup_logging
+from production_app.model_service import predict_sample, save_pipeline
+from production_app.training import train_pipeline
+
 
 def run_training_workflow():
     """Orchestrate training, evaluation, and saving workflow."""
@@ -19,6 +20,7 @@ def run_training_workflow():
     evaluate_pipeline(pipeline, X_test, y_test, raw_data.target_names)
     save_pipeline(pipeline, raw_data.target_names)
     logger.info("Fitted pipeline saved successfully.")
+
 
 def run_prediction_workflow():
     """Orchestrate reloading saved pipeline and predicting a sample without retraining."""
@@ -37,6 +39,7 @@ def run_prediction_workflow():
     logger.info(
         f"Prediction -> Actual: {actual_label} | Predicted: {pred_label} ({pred_idx}) | Confidence: {confidence*100:.2f}%"
     )
+
 
 def run_workflow():
     """Run both training and prediction workflows."""
