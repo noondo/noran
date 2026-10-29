@@ -1,6 +1,6 @@
 ﻿import os
 from pathlib import Path
-
+from dataclasses import dataclass
 from dotenv import load_dotenv
 
 # Load environment variables from .env if present
@@ -10,6 +10,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+@dataclass
 class Config:
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
@@ -36,9 +37,10 @@ class Config:
     EPOCHS: int = int(os.getenv("EPOCHS", 10))
 
 
+# Create a global configuration instance
 config = Config()
 
-# Export variables for direct imports
+# Export variables for direct imports (backward compatibility)
 ENVIRONMENT = config.ENVIRONMENT
 LOG_LEVEL = config.LOG_LEVEL
 MODEL_DIR = config.MODEL_DIR

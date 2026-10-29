@@ -1,39 +1,57 @@
-# Breast Cancer Classification — Production Python Pipeline
+## Breast Cancer Classification — Production ML Pipeline
 
-A modular, robust Machine Learning classification project refactored from an exploratory Jupyter Notebook into a clean, reproducible Python application using **scikit-learn**, **uv**, and enterprise engineering standards.
+## 1. Project Goal
+The objective of this project is to transition an experimental machine learning workflow from a Jupyter Notebook into a modular, production-ready Python application. The pipeline predicts whether a breast tumor is **malignant** or **benign** based on diagnostic features, adhering to software engineering best practices including environment-based configuration, structured logging, exception handling, artifact serialization, and automated code-quality checks (`Ruff`, `Black`, and `pre-commit`).
 
-##  Project Goal & Scope
-The objective of this project is to build, validate, serialize, and deploy a machine learning classification model following strict software engineering principles:
-* Elimination of hardcoded variables through centralized configuration.
-* Prevention of Data Leakage using `scikit-learn` Pipelines.
-* Comprehensive operational logging instead of standard print statements.
-* Graceful exception handling for artifacts and user inputs.
-* Complete environment reproducibility via `uv`.
+## 2. Dataset
+- **Dataset:** Breast Cancer Wisconsin (Diagnostic) Dataset (`scikit-learn` built-in dataset).
+- **Shape:** 569 samples and 31 columns (30 numeric predictive features + 1 target column).
+- **Missing Values:** 0 missing values.
+- **Target Classes:** `malignant` (0) and `benign` (1).
 
-##  Dataset & Model Choice
-* **Dataset:** Breast Cancer Wisconsin (Diagnostic) Dataset, loaded directly via `scikit-learn` (`load_breast_cancer`). It contains 569 samples and 30 numerical features used to classify tumors as malignant or benign.
-* **Model:** Logistic Regression combined with a `StandardScaler` inside a unified `scikit-learn` Pipeline.
+## 3. ML Pipeline & Model Choice
+To prevent data leakage and ensure seamless reproducibility between training and inference, the workflow wraps preprocessing and classification into a single `scikit-learn` `Pipeline`:
+1. **Preprocessing (`StandardScaler`):** Standardizes numerical features by removing the mean and scaling to unit variance.
+2. **Model (`LogisticRegression`):** Selected for its strong baseline performance on linearly separable medical tabular data, fast training speed, and high interpretability.
+3. **Serialization (`joblib`):** Both the fitted preprocessor and trained model are persisted together inside `models/pipeline.joblib` alongside target class names (`models/target_names.joblib`). Prediction loads this exact artifact without retraining.
 
-##  Project Structure
+## 4. Folder Structure
 ```text
-ml-production-project/
+ml-project/
+├── models/                     # Saved serialized pipeline and target names (.joblib)
 ├── notebooks/
-│   └── 01_exploration.ipynb   # Stage A: Exploratory data analysis & baseline validation
-├── production_app/            # Core production package
-│   ├── __init__.py            # Package marker
-│   ├── config.py              # Centralized configuration via environment variables
-│   ├── logging_config.py      # Structured logging setup
-│   ├── data.py                # Data loading, inspection, and stratified splitting
-│   ├── preprocessing.py       # Reusable feature scaling definitions
-│   ├── training.py            # Pipeline assembly and model fitting
-│   ├── evaluation.py          # Metric reporting and confusion matrix generation
-│   ├── model_service.py       # Serialization (joblib) & exception-safe inference
-│   └── main.py                # Workflow orchestration
-├── models/                    # Saved pipeline artifacts (.joblib)
-├── .env.example               # Safe template for environment variables
-├── .gitignore                 # Excluded directories (.venv, caches, etc.)
-├── .pre-commit-config.yaml    # Code quality and formatting hooks config
-├── pyproject.toml             # Project metadata and dependencies (uv)
-├── uv.lock                    # Locked dependency versions for reproducibility
-├── run.py                     # Main application entry point
-└── README.md                  # Project documentation
+│   └── 01_exploration.ipynb    # Initial EDA, experimentation, and baseline modeling
+├── production_app/             # Modular production Python package
+│   ├── __init__.py
+│   ├── config.py               # Environment variable loading and path configurations
+│   ├── data.py                 # Dataset loading, inspection, and train/test splitting
+│   ├── evaluation.py           # Model evaluation metrics, confusion matrix, and reports
+│   ├── logging_config.py       # Centralized logging configuration
+│   ├── main.py                 # Core orchestration for training and inference workflows
+│   ├── model_service.py        # Artifact saving, loading, and single-sample inference
+│   ├── preprocessing.py        # Feature scaling and preprocessing pipeline builder
+│   └── training.py             # Pipeline assembly and model fitting
+├── .env.example                # Safe template for runtime environment variables
+├── .gitignore                  # Ignored files (.env, __pycache__, virtual environments)
+├── .pre-commit-config.yaml     # Automated pre-commit hooks for Ruff and Black
+├── pyproject.toml              # Project dependencies and tool configurations
+├── README.md                   # Project documentation and execution guide
+└── run.py                      # CLI entry point for training and prediction
+
+# Production ML Classification Project
+
+## Project Structure
+```text
+production_app/
+├── __init__.py
+├── config.py
+├── model_service.py
+# Assignment 02: Production API Integration
+
+### Overview
+This update extends the Assignment 01 ML pipeline by wrapping the trained model in a production-ready REST API using FastAPI. The application loads the serialized model artifact and serves predictions via HTTP endpoints.
+
+### Setup and Execution
+1. **Install dependencies:**
+   ```bash
+   uv sync

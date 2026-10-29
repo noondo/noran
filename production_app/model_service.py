@@ -1,25 +1,43 @@
-﻿import joblib
+﻿from pathlib import Path
+import joblib
+from typing import Union, List, Any
+from production_app.config import PIPELINE_PATH, TARGET_NAMES_PATH
 
-from production_app.config import MODELS_DIR, PIPELINE_PATH, TARGET_NAMES_PATH
-
-
-def save_pipeline(pipeline, target_names):
-    """Save the fitted pipeline artifact with joblib."""
-    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+# ---------------------------------------------------------
+# 1.  (Training & Saving)
+# ---------------------------------------------------------
+def save_pipeline(pipeline: Any, target_names: Any) -> None:
+    """Saves the trained pipeline and target names to disk."""
+   
+    Path(PIPELINE_PATH).parent.mkdir(parents=True, exist_ok=True)
+    
+  
     joblib.dump(pipeline, PIPELINE_PATH)
     joblib.dump(target_names, TARGET_NAMES_PATH)
 
+def predict_sample(model: Any, input_data: Any) -> Any:
+    """Predicts a single sample (used during training evaluation)."""
+    return model.predict([input_data])[0]
 
-def load_pipeline():
-    """Load the saved pipeline artifact."""
-    pipeline = joblib.load(PIPELINE_PATH)
-    target_names = joblib.load(TARGET_NAMES_PATH)
-    return pipeline, target_names
+# ---------------------------------------------------------
+# 2.(API Loading & Serving)
+# ---------------------------------------------------------
+def load_trained_model(model_path: Union[str, Path]) -> Any:
+    """Loads the trained model for the API."""
+    path = Path(model_path)
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Model file not found at '{path}'. Please train the model first by running: uv run python run.py train"
+        )
+    try:
+        model = joblib.load(path)
+        return model
+    except Exception as e:
+        raise RuntimeError(f"Failed to load the model from {path}: {e}")
 
-
-def predict_sample(sample_df):
-    """Predict using the saved artifact without retraining."""
-    pipeline, target_names = load_pipeline()
-    pred_class = pipeline.predict(sample_df)[0]
-    pred_prob = pipeline.predict_proba(sample_df)[0]
-    return str(target_names[pred_class]), int(pred_class), float(pred_prob[pred_class])
+def predict(model: Any, input_data: List[float]) -> Any:
+    """Performs inference on incoming API requests."""
+    if not input_data:
+        raise ValueError("Input data for prediction cannot be empty.")
+    prediction = model.predict([input_data])
+    return prediction[0]
