@@ -1,0 +1,13 @@
+# Ignore virtual environments
+.venv
+.venv-1
+
+# Ignore cache directories
+__pycache__
+.pytest_cache
+
+# Ignore git history
+.git
+
+# Ignore environment variables
+.env

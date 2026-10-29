@@ -47,11 +47,13 @@ production_app/
 ├── config.py
 ├── model_service.py
 # Assignment 02: Production API Integration
+## Assignment 02: Production API Integration
 
 ### Overview
-This update extends the Assignment 01 ML pipeline by wrapping the trained model in a production-ready REST API using FastAPI. The application loads the serialized model artifact and serves predictions via HTTP endpoints.
+This assignment extends the ML pipeline from Assignment 01 by wrapping the trained classification model in a production-ready REST API using FastAPI. The application flow starts with an HTTP request containing patient data, validates the input using Pydantic, loads the saved model artifact, and returns a real-time prediction.
 
-### Setup and Execution
-1. **Install dependencies:**
-   ```bash
-   uv sync
+### Installation and Execution
+**1. Environment Setup & Dependencies**
+Ensure you have `uv` installed, then synchronize the environment:
+```bash
+uv sync
